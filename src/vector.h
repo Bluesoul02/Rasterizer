@@ -13,7 +13,7 @@ namespace aline {
 
             Vector(std::initializer_list<T> list) {
                 if (list.size() > N)
-                    throw runtime_error("list size bigger than N");
+                    throw std::runtime_error("list size bigger than N");
                 for (int i = 0; i < N; i++) {
                     if (i > list.size())
                         vector[i] = 0;
@@ -28,40 +28,99 @@ namespace aline {
                 }
             }
 
-            template T Vector<T,N>::at( size_t i) const {
+            template <T> T at(size_t i) const {
                 if (i > N)
-                    throw runtime_error("index out of range");
+                    throw std::runtime_error("index out of range");
                 return vector[i];
             }
 
-            T Vector<T,N>::operator[]( size_t i) const {
+            T operator[]( size_t i) const {
                 at(i);
             }
 
-            T & Vector<T,N>::operator[]( size_t i) {
-                
+            T & operator[]( size_t i) {
+                at(i);
             }
 
-            Vector<T,N> & Vector::operator+=( const Vector<T,N> & );
+            Vector<T,N> & operator+=(const Vector<T,N> & v) {
+                vector += v;
+            }
 
-            Vector<T,N> cross( const Vector<T,N> &, const Vector<T,N> & );
-            T dot( const Vector<T,N> &, const Vector<T,N> & );
-            bool isnan( const Vector & );
-            bool is_unit( const Vector<T,N> & );
-            bool nearly_equal( const Vector<T,N> &, const Vector<T,N> & );
-            T Vector<T,N>::norm();
-            bool operator==( const Vector<T,N> &, const Vector<T,N> & );
-            bool operator!=( const Vector<T,N> & v1, const Vector<T,N> & v2 );
-            std::ostream operator<<( std::ostream &, const Vector<T,N> v );
-            Vector<T,N> operator+( const Vector<T,N> &, const Vector<T,N> & );
-            Vector<T,N> operator-( const Vector<T,N> & );
-            Vector<T,N> operator-( const Vector<T,N> &, const Vector<T,N> & );
-            Vector<T,N> operator*( const T &, const vector<T,N> & );
-            Vector<T,N> operator*( const vector<T,N> &, const T & );
-            Vector<T,N> operator*( const vector<T,N> &, const Vector<T,N> & );
-            Vector<T,N> operator/( const Vector<T,N> & v, const T & s );
-            T Vector<T,N>::sq_norm();
-            std::string to_string( const Vector<T,N> & );
-            Vector<T,N> unit_vector( const Vector<T,N> & v );
+            Vector<T,N> cross( const Vector<T,N> &v1, const Vector<T,N> &v2) {
+
+            }
+
+            T dot( const Vector<T,N> &v1, const Vector<T,N> &v2) {
+
+            }
+
+            bool isnan( const Vector &v) {
+                for (int i = 0; i < N; i++)
+                    if (isnan(vector[i])) return true;
+            }
+
+            bool is_unit( const Vector<T,N> &v) {
+                return false;
+            }
+
+            bool nearly_equal( const Vector<T,N> &v1, const Vector<T,N> &v2) {
+                return false;
+            }
+
+            T norm() {
+
+            }
+
+            bool operator==(const Vector<T,N> &v) {
+                return false;
+            }
+
+            bool operator!=(const Vector<T,N> & v) {
+                return false;
+            }
+
+            std::ostream operator<<(std::ostream &s) {
+
+            }
+
+            Vector<T,N> operator+(const Vector<T,N> &v) {
+
+            }
+
+            Vector<T,N> operator-() {
+
+            }
+
+            Vector<T,N> operator-(const Vector<T,N> &v) {
+
+            }
+
+            Vector<T,N> operator*(const T &t) { // The product of a scalar and a vector.
+
+            }
+
+            Vector<T,N> operator*(const T &t) { // The product of a vector and a scalar.
+
+            }
+
+            Vector<T,N> operator*(const Vector<T,N> &v) {
+
+            }
+
+            Vector<T,N> operator/(const T &t) {
+
+            }
+
+            template <T> T sq_norm() {
+                return 0;
+            }
+
+            std::string to_string() {
+                return "";
+            }
+
+            Vector<T,N> unit_vector(const Vector<T,N> &v) {
+
+            }
     };
 }
