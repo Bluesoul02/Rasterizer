@@ -68,14 +68,68 @@ namespace aline {
         }
     };
 
+    //template <class T, int M, int N> int det(const Matrix<T, M, N>& m) {
+    //    int d = 0;
+    //    Matrix<T, (M - 1), (N - 1)> sub;
+    //    if (M == 2)
+    //        return ((m[0][0] * m[1][1]) - (m[1][0] * m[0][1]));
+    //    else {
+    //        for (int x = 0; x < M; x++) {
+    //            int subi = 0;
+    //            for (int i = 1; i < N; i++) {
+    //                int subj = 0;
+    //                for (int j = 0; j < N; j++) {
+    //                    if (j == x)
+    //                        continue;
+    //                    sub[subi][subj] = m[i][j];
+    //                    subj++;
+    //                }
+    //                subi++;
+    //            }
+    //            d = d + (std::pow(-1, x) * m[0][x] * det(sub));
+    //        }
+    //    }
+    //    return d;
+    //}
+
     template <class T, int M, int N> Matrix<T, M, N> inverse(const Matrix<T, M, N>&m) {
-        //for (i = 0; i < N; i++)
-        //    det = ;
         Matrix<T, M, N> res;
-        //for (i = 0; i < 3; i++) {
-        //    for (j = 0; j < 3; j++)
-        //        res[i][j] = ((mat[(j + 1) % 3][(i + 1) % 3] * mat[(j + 2) % 3][(i + 2) % 3]) - (mat[(j + 1) % 3][(i + 2) % 3] * mat[(j + 2) % 3][(i + 1) % 3])) / det);
-        //    printf("\n");
+        //Matrix<T, M, N> temp;
+        if (M != N) {
+            for (int i = 0; i < M; i++)
+                for (int j = 0; j < N; j++)
+                    res[i][j] = nan("");
+            return res;
+        }
+
+        //int determinant = det(m);
+
+        //if (determinant == 0) {
+        //    for (int i = 0; i < M; i++)
+        //        for (int j = 0; j < N; j++)
+        //            res[i][j] = nan("");
+        //    return res;
+        //}
+
+        //int row = 0, col = 0, sign = 1;
+        //for (int p = 0; p < M; p++) {
+        //    for (int q = 0; q < N; q++) {
+        //        for (int i = 0; i < M; i++) {
+        //            for (int j = 0; j < N; j++) {
+        //                if (i != p && j != q) {
+        //                    temp[row][col++] = m[i][j];
+
+        //                    if (col == N - 1) {
+        //                        col = 0;
+        //                        row++;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        sign = ((p + q) % 2 == 0) ? 1 : -1;
+
+        //        res[q][p] = (sign) * (det(temp, N - 1));
+        //    }
         //}
         return res;
     }
@@ -201,7 +255,7 @@ namespace aline {
         Matrix<T, M, N> res;
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
-                res[j][i] += m[i][j];
+                res[j][i] = m[i][j];
             }
         }
         return res;
