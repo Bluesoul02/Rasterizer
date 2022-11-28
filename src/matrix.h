@@ -125,7 +125,6 @@ namespace aline {
         }
 
         int determinant = det(m, N);
-        std::cout << determinant;
 
         if (determinant == 0) {
            for (int i = 0; i < M; i++)
@@ -133,8 +132,9 @@ namespace aline {
                    res[i][j] = nan("");
            return res;
         }
-        std::cout << adj(m);
+
         res = adj(m) / (double) determinant;
+        
         return res;
     }
 
