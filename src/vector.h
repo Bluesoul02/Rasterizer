@@ -88,7 +88,7 @@ namespace aline {
     }
 
     template <class T, int N> bool is_unit(const Vector<T, N>& v) {
-        return std::round(norm(v)) == 1; // using road because double arren't as precise as floats
+        return std::round(norm(v)) == 1; // using round because double arren't as precise as floats
     }
 
     template <class T, int N> bool nearly_equal(const Vector<T, N>& u, const Vector<T, N>& v) {

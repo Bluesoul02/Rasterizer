@@ -68,33 +68,55 @@ namespace aline {
         }
     };
 
-    //template <class T, int M, int N> int det(const Matrix<T, M, N>& m) {
-    //    int d = 0;
-    //    Matrix<T, (M - 1), (N - 1)> sub;
-    //    if (M == 2)
-    //        return ((m[0][0] * m[1][1]) - (m[1][0] * m[0][1]));
-    //    else {
-    //        for (int x = 0; x < M; x++) {
-    //            int subi = 0;
-    //            for (int i = 1; i < N; i++) {
-    //                int subj = 0;
-    //                for (int j = 0; j < N; j++) {
-    //                    if (j == x)
-    //                        continue;
-    //                    sub[subi][subj] = m[i][j];
-    //                    subj++;
-    //                }
-    //                subi++;
-    //            }
-    //            d = d + (std::pow(-1, x) * m[0][x] * det(sub));
-    //        }
-    //    }
-    //    return d;
-    //}
+    template <class T, int N> int det(const Matrix<T, N, N>& m, int n) {
+        int d = 0;
+        if (n == 1)
+            return m[0][0];
+        Matrix<T, N, N> res;
+        int s = 1;
+        for (int f = 0; f < n; f++) {
+            //For Getting Cofactor of m[0][f] do 
+            res = getCfactor(m, 0, f, n);
+            d += s * m[0][f] * det(res, n - 1);
+            s = -s;
+        }
+        return d;
+    }
 
-    template <class T, int M, int N> Matrix<T, M, N> inverse(const Matrix<T, M, N>&m) {
-        Matrix<T, M, N> res;
-        //Matrix<T, M, N> temp;
+    template <class T, int N> Matrix<T, N, N> getCfactor(const Matrix<T, N, N>&m, int p, int q, int n) {
+        int i = 0, j = 0;
+        Matrix<T, N, N> res;
+        for (int r= 0; r< n; r++) {
+            for (int c = 0; c< n; c++) //Copy only those elements which are not in given row r and column c: {
+                if (r != p && c != q) { res[i][j++] = m[r][c]; //If row is filled increase r index and reset c index
+                    if (j == n - 1) {
+                    j = 0; i++;
+                    }
+                }
+        }
+        return res;
+    }
+
+    template <class T, int N> Matrix<double, N, N> adj(const Matrix<T, N, N>&m) {
+        Matrix<T, N, N> res;
+        Matrix<double, N, N> adj;
+        if (N == 1) {
+            adj[0][0] = 1; 
+            return adj;
+        }
+        int s = 1;
+        for (int i=0; i<N; i++) {
+            for (int j=0; j<N; j++) {
+                res = getCfactor(m, i, j, N);
+                s = ((i+j)%2==0)? 1: -1; //sign of adj[j][i] positive if sum of row and column indexes is even.
+                adj[j][i] = (s)*(det(res, N-1)); //Interchange rows and columns to get the transpose of the cofactor matrix
+            }
+        }
+        return adj;
+    }
+
+    template <class T, int M, int N> Matrix<double, M, N> inverse(const Matrix<T, M, N>&m) {
+        Matrix<double, N, N> res;
         if (M != N) {
             for (int i = 0; i < M; i++)
                 for (int j = 0; j < N; j++)
@@ -102,35 +124,17 @@ namespace aline {
             return res;
         }
 
-        //int determinant = det(m);
+        int determinant = det(m, N);
+        std::cout << determinant;
 
-        //if (determinant == 0) {
-        //    for (int i = 0; i < M; i++)
-        //        for (int j = 0; j < N; j++)
-        //            res[i][j] = nan("");
-        //    return res;
-        //}
-
-        //int row = 0, col = 0, sign = 1;
-        //for (int p = 0; p < M; p++) {
-        //    for (int q = 0; q < N; q++) {
-        //        for (int i = 0; i < M; i++) {
-        //            for (int j = 0; j < N; j++) {
-        //                if (i != p && j != q) {
-        //                    temp[row][col++] = m[i][j];
-
-        //                    if (col == N - 1) {
-        //                        col = 0;
-        //                        row++;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        sign = ((p + q) % 2 == 0) ? 1 : -1;
-
-        //        res[q][p] = (sign) * (det(temp, N - 1));
-        //    }
-        //}
+        if (determinant == 0) {
+           for (int i = 0; i < M; i++)
+               for (int j = 0; j < N; j++)
+                   res[i][j] = nan("");
+           return res;
+        }
+        std::cout << adj(m);
+        res = adj(m) / (double) determinant;
         return res;
     }
 
