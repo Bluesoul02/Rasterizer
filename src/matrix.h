@@ -75,7 +75,6 @@ namespace aline {
         Matrix<T, N, N> res;
         int s = 1;
         for (int f = 0; f < n; f++) {
-            //For Getting Cofactor of m[0][f] do 
             res = getCfactor(m, 0, f, n);
             d += s * m[0][f] * det(res, n - 1);
             s = -s;
@@ -87,10 +86,10 @@ namespace aline {
         int i = 0, j = 0;
         Matrix<T, N, N> res;
         for (int r= 0; r< n; r++) {
-            for (int c = 0; c< n; c++) //Copy only those elements which are not in given row r and column c: {
-                if (r != p && c != q) { res[i][j++] = m[r][c]; //If row is filled increase r index and reset c index
+            for (int c = 0; c< n; c++)
+                if (r != p && c != q) { res[i][j++] = m[r][c];
                     if (j == n - 1) {
-                    j = 0; i++;
+                        j = 0; i++;
                     }
                 }
         }
@@ -134,7 +133,7 @@ namespace aline {
         }
 
         res = adj(m) / (double) determinant;
-        
+
         return res;
     }
 
@@ -238,6 +237,8 @@ namespace aline {
     }
 
     template <class T, int M, int N> Matrix<T, M, N> operator/(const Matrix<T, M, N>& m, const T& s) {
+        if (s == 0)
+            throw std::runtime_error("div by zero");
         Matrix<T, M, N> res;
         for (int i = 0; i < M; i++) {
             res[i] = 1 / s * m[i];

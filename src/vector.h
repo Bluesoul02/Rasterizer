@@ -182,6 +182,8 @@ namespace aline {
     }
 
     template <class T, int N> Vector<T, N> operator/(const Vector<T, N>& v, const T& t) {
+        if (t == 0)
+            throw std::runtime_error("div by zero");
         Vector<T, N> res;
         for (int i = 0; i < N; i++) {
             res[i] = v[i] / t;

@@ -301,7 +301,7 @@ int test_operator_div()
     { {1/b * a[0][0], 1/b * a[0][1]}
     , {1/b * a[1][0], 1/b * a[1][1]}
     , {1/b * a[2][0], 1/b * a[2][1]} };
-
+  
   TestVector test_vec { { "a / b == c", a / b == c } };
 
   return run_tests( "operator*( Matrix, Scalar )", test_vec );
@@ -309,6 +309,8 @@ int test_operator_div()
 
 int test_operator_negation()
 {
+    int failures { 0 };
+
     Matrix<int,2,3> a
      { {  1,  2,  3 }
      , { -1, -2, -3 } };
@@ -318,7 +320,18 @@ int test_operator_negation()
 
     TestVector test_vec { { "-a == b", -a == b} };
 
-    return run_tests( "operator-( Matrix )", test_vec );
+    try
+    {
+      Matrix<double,3,2> a
+      { {1,2}
+      , {3,4}
+      , {5,6} };
+      std::cerr << "Failure: a/0 = " << a/0.0 << std::endl;
+      ++failures;
+    }  
+    catch( ... ) {}
+
+    return run_tests( "operator-( Matrix )", test_vec ) + failures;
 }
 
 int test_operator_minus()
