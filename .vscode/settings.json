@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "random": "cpp"
+        "random": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "cstddef": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cwchar": "cpp"
     }
 }

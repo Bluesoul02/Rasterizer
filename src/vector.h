@@ -213,3 +213,8 @@ namespace aline {
         return res;
     }
 }
+
+using uint = unsigned int;
+using real = double;
+using Vec2i = aline::Vector<int,2ul>;
+using Vec2r = aline::Vector<real,2ul>;

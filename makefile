@@ -30,7 +30,7 @@ else ifeq ($(OS), Darwin)
     INC := -Isrc/
     LIBS := 
 endif
-CFLAGS = -std=c++11 -Wall -O $(CDEBUG) $(INC)
+CFLAGS = -std=c++11 -Wall -O $(CDEBUG) $(INC) -I${HOME}/Documents/FMJ/Lab2/minwin/include -I${HOME}/Documents/FMJ/Lab2/minwin/src -L${HOME}/Documents/FMJ/Lab2/minwin/bin/libminwin -lminwin
 LDFLAGS = -g
 
 # Find all source file names.
@@ -54,6 +54,11 @@ all: $(TEST_BIN_FILES)
 
 # Create test_vector
 $(BIN_DIR)/test_vector: $(OBJ_DIR)/test_vector.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $^ $(LDFLAGS) -o $@
+
+# Create test_minwin
+$(BIN_DIR)/test_minwin: $(OBJ_DIR)/test_minwin.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
