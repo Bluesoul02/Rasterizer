@@ -3,6 +3,10 @@
 #include <window.h>
 #include "ibehavior.h"
 
+#define VIEWPORT_WIDTH 2.0
+#define CANVAS_WIDTH 1366.0
+#define CANVAS_HEIGHT 768.0
+
 namespace aline {
 
     class Scene {
@@ -26,6 +30,7 @@ namespace aline {
             }
 
             void run() {
+                window.register_key_behavior( minwin::KEY_ESCAPE, new QuitKeyBehavior( *this ) );
                 window.register_quit_behavior( new QuitButtonBehavior( *this ) );
 
                 // open window
@@ -43,10 +48,15 @@ namespace aline {
                     // clear window
                     window.clear();
 
+                    // set color
+                    window.set_draw_color( minwin::WHITE );
+                    
                     for (Shape s : shapes) {
-                        // set color
-                        window.set_draw_color( minwin::WHITE );
-                        draw_line(s.get_vertices()[0], s.get_vertices()[1]);
+                        for (Face f : s.get_faces()) {
+                            draw_line(s.get_vertices()[f[0]], s.get_vertices()[f[1]]);
+                            draw_line(s.get_vertices()[f[1]], s.get_vertices()[f[2]]);
+                            draw_line(s.get_vertices()[f[0]], s.get_vertices()[f[2]]);
+                        }
                     }
                     
                     // display elements drawn so far
@@ -58,17 +68,40 @@ namespace aline {
                 window.close();
             }
 
-                void draw_line( const Vec2r & v0, const Vec2r & v1 ) const { 
-                    // draw a line
-                    for( int i = v0[0]; i < v1[1]; ++i )
-                        window.put_pixel( i, 80 );
-                }
+            void draw_line( const Vec2r & v0, const Vec2r & v1 ) const { 
+                // draw a line
+                
+            }
+
+            Vec2r viewport_to_canvas( const Vec2r & point ) {
+                Vec2r vec = Vec2r();
+                vec[0] = point[0] * CANVAS_WIDTH / VIEWPORT_WIDTH;
+                vec[1] = point[1] * CANVAS_HEIGHT / ((CANVAS_HEIGHT/CANVAS_WIDTH) * VIEWPORT_WIDTH);
+                return vec;
+            }
+
+            Vec2i canvas_to_window( const Vec2r & point ) {
+                Vec2i vec = Vec2i();
+                vec[0] = CANVAS_WIDTH/2 + point[0];
+                vec[1] = CANVAS_HEIGHT/2 + point[1];
+                return vec;
+            }
 
             class QuitButtonBehavior : public minwin::IButtonBehavior
             {
                 public:
                     QuitButtonBehavior( Scene &scene ) : owner { scene } {}
                     void on_click() const { this->owner.running = false; }
+                private:
+                    Scene & owner;
+            };
+
+            class QuitKeyBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    QuitKeyBehavior( Scene & scene ) : owner { scene } {}
+                    void on_press() const { this->owner.running = false; }
+                    void on_release() const {}
                 private:
                     Scene & owner;
             };
