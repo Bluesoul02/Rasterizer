@@ -4,8 +4,8 @@
 #include "ibehavior.h"
 
 #define VIEWPORT_WIDTH 2.0
-#define CANVAS_WIDTH 1000
-#define CANVAS_HEIGHT 1000
+#define CANVAS_WIDTH 500
+#define CANVAS_HEIGHT 500
 
 namespace aline {
 
@@ -13,6 +13,7 @@ namespace aline {
         private:
             minwin::Window window;
             bool running { true };
+            int display = 0;
             std::vector<Shape> shapes;
         public:
             Scene() {
@@ -30,8 +31,9 @@ namespace aline {
             }
 
             void run() {
-                window.register_key_behavior( minwin::KEY_ESCAPE, new QuitKeyBehavior( *this ) );
-                window.register_quit_behavior( new QuitButtonBehavior( *this ) );
+                window.register_key_behavior(minwin::KEY_ESCAPE, new QuitKeyBehavior(*this));
+                window.register_key_behavior( minwin::KEY_SPACE, new ChangeDisplayBehavior(*this));
+                window.register_quit_behavior(new QuitButtonBehavior(*this));
 
                 // open window
                 if( not window.open() )
@@ -55,9 +57,12 @@ namespace aline {
                             Vec2r v0 = s.get_vertices()[f.get_v0()].get_vector();
                             Vec2r v1 = s.get_vertices()[f.get_v1()].get_vector();
                             Vec2r v2 = s.get_vertices()[f.get_v2()].get_vector();
-                            draw_line(v0, v1);
-                            draw_line(v1, v2);
-                            draw_line(v0, v2);
+                            if (display == 0) {
+                                draw_wireframe_triangle(v0, v1, v2);
+                            }
+                            else if (display == 1) {
+                                draw_filled_triangle(v0, v1, v2);
+                            }
                         }
                     }
                     
@@ -68,6 +73,69 @@ namespace aline {
 
             void shutdown() {
                 window.close();
+            }
+
+            void draw_wireframe_triangle( const Vec2r & v0, const Vec2r & v1, const Vec2r & v2 ) const {
+                draw_line (v0, v1);
+                draw_line (v1, v2);
+                draw_line (v2, v0);
+            }   
+
+            void draw_filled_triangle( const Vec2r & v0, const Vec2r & v1, const Vec2r & v2 ) const {
+                Vec2i u = canvas_to_window(viewport_to_canvas(v0));
+                Vec2i v = canvas_to_window(viewport_to_canvas(v1));
+                Vec2i w = canvas_to_window(viewport_to_canvas(v2));
+
+                if(v[1] < u[1]) std::swap(v, u);
+                if(w[1] < u[1]) std::swap(w, u);
+                if(w[1] < v[1]) std::swap(w, v);
+
+                int x0 = u[0];
+                int x1 = v[0];
+                int x2 = w[0];
+                int y0 = u[1];
+                int y1 = v[1];
+                int y2 = w[1];
+
+                std::vector<real> x02 = interpolate(y0, x0, y2, x2);
+                std::vector<real> x01 = interpolate(y0, x0, y1, x1);
+                std::vector<real> x12 = interpolate(y1 ,x1 ,y2 ,x2);
+
+                x01. pop_back();
+                std::vector<real> x012(x01);
+                x012.insert(x012.end(), x12.begin(), x12.end());
+
+                int m = floor(x012.size() / 2);
+                std::vector<real> x_left;
+                std::vector<real> x_right;
+                if(x02[m] < x012[m]) {
+                    x_left = x02;
+                    x_right = x012;
+                } else {
+                    x_left = x012;
+                    x_right = x02;
+                }
+
+                for(int y = y0; y <= y2; ++y)
+                    for(int x = x_left[y - y0]; x <= x_right [y - y0]; ++x)
+                        window.put_pixel(x, y);
+            }
+
+            std::vector<real> interpolate (int i0, real d0, int i1, real d1) const {
+                std::vector<real> values;
+                if( i0 == i1 ) {
+                    values.push_back(d0);
+                    return values;
+                }
+            
+                real a = (d0 - d1) / (i0 - i1);
+                real d = d0;
+            
+                for(int i = i0; i <= i1; ++i) {
+                    values.push_back(d);
+                    d = d + a;
+                }
+                return values ;
             }
 
             void draw_line( const Vec2r & v0, const Vec2r & v1 ) const { 
@@ -130,6 +198,23 @@ namespace aline {
                 public:
                     QuitKeyBehavior( Scene & scene ) : owner { scene } {}
                     void on_press() const { this->owner.running = false; }
+                    void on_release() const {}
+                private:
+                    Scene & owner;
+            };
+
+            class ChangeDisplayBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    ChangeDisplayBehavior( Scene & scene ) : owner { scene } {}
+                    void on_press() const {
+                        if (this->owner.display == 0) {
+                            this->owner.display = 1;
+                        }
+                        else if (this->owner.display == 1) {
+                            this->owner.display = 0;
+                        }
+                    }
                     void on_release() const {}
                 private:
                     Scene & owner;
