@@ -180,7 +180,7 @@ namespace aline {
             Vec2i canvas_to_window( const Vec2r & point ) const {
                 Vec2i vec = Vec2i();
                 vec[0] = CANVAS_WIDTH/2 + point[0];
-                vec[1] = CANVAS_HEIGHT/2 + point[1];
+                vec[1] = CANVAS_HEIGHT/2 - point[1];
                 return vec;
             }
 
