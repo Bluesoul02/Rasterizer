@@ -27,9 +27,25 @@ namespace aline {
         public:
             Face( uint v0, uint v1, uint v2, const minwin::Color & color ) {
                 this->v0 = v0;
-                this->v2 = v1;
+                this->v1 = v1;
                 this->v2 = v2;
                 c = color;
+            }
+
+            uint get_v0() const {
+                return v0;
+            }
+
+            uint get_v1() const {
+                return v1;
+            }
+
+            uint get_v2() const {
+                return v2;
+            }
+
+            minwin::Color get_color() const {
+                return c;
             }
     };
 

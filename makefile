@@ -57,11 +57,6 @@ $(BIN_DIR)/test_vector: $(OBJ_DIR)/test_vector.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
-# Create test_minwin
-$(BIN_DIR)/test_minwin: $(OBJ_DIR)/test_minwin.o
-	mkdir -p $(BIN_DIR)
-	$(CC) $^ $(LDFLAGS) -o $@
-
 # Create test_scene
 $(BIN_DIR)/test_scene: $(OBJ_DIR)/test_scene.o
 	mkdir -p $(BIN_DIR)
