@@ -16,6 +16,10 @@ namespace aline {
             Vec2r get_vector() const {
                 return vec;
             }
+
+            real get_H() const {
+                return h;
+            }
     };
 
     class Face {
