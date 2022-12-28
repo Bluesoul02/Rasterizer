@@ -21,30 +21,38 @@ namespace aline {
             std::vector<Object> objects;
 
             void draw_object(const Object &o) {
-                auto transform = o.transform();
-                //segfault here
-                for (Face f : o.get_faces()) {
+                // Mat44r transform = o.transform(); // bad alloc
+
+                std::cout << "Vertices vector size: " << o.get_vertices().size() << std::endl;
+                for (const Vertex &v : o.get_vertices()) {
+                std::cout << v.get_vector() << std::endl;
+                }
+                std::cout << "Faces vector size: " << o.get_faces().size() << std::endl;
+                for (const Face &f : o.get_faces()) {
+                std::cout << f.get_v0() << ", " << f.get_v1() << ", " << f.get_v2() << std::endl;
+                }
+                // for (Face f : o.get_faces()) { // seg fault is o.get_faces
                     // set color
-                    window.set_draw_color(f.get_color());
-                    Vertex vert0 = o.get_vertices()[f.get_v0()];
-                    Vertex vert1 = o.get_vertices()[f.get_v1()];
-                    Vertex vert2 = o.get_vertices()[f.get_v2()];
-                    Vec3r vec0 = vert0.get_vector();
-                    Vec3r vec1 = vert1.get_vector();
-                    Vec3r vec2 = vert2.get_vector();
+                    // window.set_draw_color(f.get_color());
+                    // Vertex vert0 = o.get_vertices()[f.get_v0()];
+                    // Vertex vert1 = o.get_vertices()[f.get_v1()];
+                    // Vertex vert2 = o.get_vertices()[f.get_v2()];
+                    // Vec3r vec0 = vert0.get_vector();
+                    // Vec3r vec1 = vert1.get_vector();
+                    // Vec3r vec2 = vert2.get_vector();
 
                     //perspective projection
-                    Vec2r v0 = perspective_projection(transform[0], 1);
-                    Vec2r v1 = perspective_projection(transform[1], 1);
-                    Vec2r v2 = perspective_projection(transform[2], 1);
+                    // Vec2r v0 = perspective_projection(transform[0], 1);
+                    // Vec2r v1 = perspective_projection(transform[1], 1);
+                    // Vec2r v2 = perspective_projection(transform[2], 1);
 
                     if (display == 0) {
-                        draw_wireframe_triangle(v0, v1, v2);
+                        // draw_wireframe_triangle(v0, v1, v2);
                     }
                     else if (display == 1) {
-                        draw_filled_triangle(v0, v1, v2);
+                        // draw_filled_triangle(v0, v1, v2);
                     }
-                }
+                // }
             }
 
             Vec2r perspective_projection( const Vec4r & v, real d ) {

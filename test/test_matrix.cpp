@@ -24,7 +24,7 @@ using namespace aline;
 using Mat33i = Matrix<int,3ul,3ul>;
 using Mat33r = Matrix<real,3ul,3ul>;
 using Mat44i = Matrix<int,4ul,4ul>;
-using Mat44r = Matrix<real,4ul,4ul>;
+// using Mat44r = Matrix<real,4ul,4ul>;
 
 int test_constructors()
 {

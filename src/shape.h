@@ -89,59 +89,49 @@ namespace aline {
                 this->shape = &shape;
             }
 
-            Matrix<real, 4, 4> transform() const{
+            Mat44r transform() const {
+                Mat44r transformMatrix = 
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 0, 1}
+                };
+                Mat44r rotationMatrix;
+                Mat44r scaleMatrix;
+                Mat44r translationMatrix;
 
-                Matrix<real, 4, 4> translateMatrix = { 
-                    { 1, 0, 0, translation[0] }, 
-                    { 0, 1, 0, translation[1] }, 
-                    { 0, 0, 1, translation[2] }, 
-                    { 0, 0, 0, 1 } };
+                scaleMatrix[0][0] = scale[0];
+                scaleMatrix[1][1] = scale[1];
+                scaleMatrix[2][2] = scale[2];
+                scaleMatrix[3][3] = 1;
 
-                Matrix<real, 4, 4> rotateXMatrix = { 
-                    { 1, 0, 0, 0 }, 
-                    { 0, std::cos(rotation[0]), -std::sin(rotation[0]), 0 }, 
-                    { 0, std::sin(rotation[0]), std::cos(rotation[0]), 0 }, 
-                    { 0, 0, 0, 1 } };
+                real r0 = rotation[0] * M_PI / 180;
+                real r1 = rotation[1] * M_PI / 180;
+                real r2 = rotation[2] * M_PI / 180;
 
-                Matrix<real, 4, 4> rotateYMatrix = { 
-                    { std::cos(rotation[1]), 0, std::sin(rotation[1]), 0 }, 
-                    { 0, 1, 0, 0 }, 
-                    { -std::sin(rotation[1]), 0, std::cos(rotation[1]), 0 }, 
-                    { 0, 0, 0, 1 } };
+                rotationMatrix[0][0] = cos(r1) * cos(r2);
+                rotationMatrix[0][1] = cos(r1) * sin(r2);
+                rotationMatrix[0][2] = -sin(r1);
 
-                Matrix<real, 4, 4> rotateZMatrix = { 
-                    { std::cos(rotation[2]), -std::sin(rotation[2]), 0, 0 }, 
-                    { std::sin(rotation[2]), std::cos(rotation[2]), 0, 0 }, 
-                    { 0, 0, 1, 0 }, 
-                    { 0, 0, 0, 1 } };
+                rotationMatrix[1][0] = sin(r0) * sin(r1) * cos(r2) - cos(r0) * sin(r2);
+                rotationMatrix[1][1] = sin(r0) * sin(r1) * sin(r2) + cos(r0) * cos(r2);
+                rotationMatrix[1][2] = sin(r0) * cos(r1);
 
-                Matrix<real, 4, 4> scaleMatrix = { 
-                    { scale[0], 0, 0, 0 }, 
-                    { 0, scale[1], 0, 0 }, 
-                    { 0, 0, scale[2], 0 }, 
-                    { 0, 0, 0, 1 } };
+                rotationMatrix[2][0] = cos(r0) * sin(r1) * cos(r2) + sin(r0) * sin(r2);
+                rotationMatrix[2][1] = cos(r0) * sin(r1) * sin(r2) - sin(r0) * cos(r2);
+                rotationMatrix[2][2] = cos(r0) * cos(r1);
 
-                std::vector<Vertex> vertices = shape->get_vertices();
+                rotationMatrix[3][3] = 1;
 
-                Matrix<real, 4, 4> transform = { 
-                    { vertices[0].get_vector()[0], vertices[0].get_vector()[1], vertices[0].get_vector()[0], 0 }, 
-                    { vertices[1].get_vector()[0], vertices[1].get_vector()[1], vertices[1].get_vector()[1], 0 }, 
-                    { vertices[2].get_vector()[0], vertices[2].get_vector()[1], vertices[2].get_vector()[2], 0 }, 
-                    { 0, 0, 0, 1 } };
+                translationMatrix[0][3] = translation[0];
+                translationMatrix[1][3] = translation[1];
+                translationMatrix[2][3] = translation[2];
+                translationMatrix[3][3] = 1;
 
-                // for ( int i=0; i<3; i++ ) {
-                //     Vector<real, 3> temp = {vertices[i].get_vector()[0], vertices[i].get_vector()[1], vertices[i].get_vector()[2]};
-                //     Vector<real, 3> transformed = rotation * translation * temp;
-                //     transform[i][0] = transformed[0]; // x
-                //     transform[i][1] = transformed[1]; // y
-                //     transform[i][2] = transformed[2]; // z
-                //     transform[i][3] = scale[i]; // scale
-                // }
-                // transform[4][0] = 0;
-                // transform[4][1] = 0;
-                // transform[4][2] = 0;
-                // transform[4][3] = 1;
-                return transform * translateMatrix * rotateXMatrix * rotateYMatrix * rotateZMatrix * scaleMatrix;
+                transformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+                return transformMatrix;
             }
 
             std::vector<Vertex> get_vertices() const {
