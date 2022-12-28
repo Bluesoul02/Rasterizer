@@ -85,8 +85,11 @@ namespace aline {
             Vec3r rotation;
             Vec3r scale;
         public:
-            Object(const Shape & shape, const Vec3r & translation, const Vec3r & rotation, const Vec3r & scale): translation(translation), rotation(rotation), scale(scale) {
+            Object(const Shape & shape, const Vec3r & translation, const Vec3r & rotation, const Vec3r & scale) {
                 this->shape = &shape;
+                this->translation = translation;
+                this->rotation = rotation;
+                this->scale = scale;
             }
 
             Mat44r transform() const {
@@ -101,35 +104,33 @@ namespace aline {
                 Mat44r scaleMatrix;
                 Mat44r translationMatrix;
 
-                scaleMatrix[0][0] = scale[0];
-                scaleMatrix[1][1] = scale[1];
-                scaleMatrix[2][2] = scale[2];
-                scaleMatrix[3][3] = 1;
-
                 real r0 = rotation[0] * M_PI / 180;
                 real r1 = rotation[1] * M_PI / 180;
                 real r2 = rotation[2] * M_PI / 180;
 
-                rotationMatrix[0][0] = cos(r1) * cos(r2);
-                rotationMatrix[0][1] = cos(r1) * sin(r2);
-                rotationMatrix[0][2] = -sin(r1);
+                rotationMatrix = {
+                    {cos(r1) * cos(r2), cos(r1) * sin(r2), -sin(r1), 0},
+                    {sin(r0) * sin(r1) * cos(r2) - cos(r0) * sin(r2), sin(r0) * sin(r1) * sin(r2) + cos(r0) * cos(r2), sin(r0) * cos(r1), 0},
+                    {cos(r0) * sin(r1) * cos(r2) + sin(r0) * sin(r2), cos(r0) * sin(r1) * sin(r2) - sin(r0) * cos(r2), cos(r0) * cos(r1), 0},
+                    {0, 0, 0, 1}
+                };
 
-                rotationMatrix[1][0] = sin(r0) * sin(r1) * cos(r2) - cos(r0) * sin(r2);
-                rotationMatrix[1][1] = sin(r0) * sin(r1) * sin(r2) + cos(r0) * cos(r2);
-                rotationMatrix[1][2] = sin(r0) * cos(r1);
+                translationMatrix = {
+                    {1, 0, 0, translation[0]},
+                    {0, 1, 0, translation[1]},
+                    {0, 0, 1, translation[2]},
+                    {0, 0, 0, 1}
+                };
 
-                rotationMatrix[2][0] = cos(r0) * sin(r1) * cos(r2) + sin(r0) * sin(r2);
-                rotationMatrix[2][1] = cos(r0) * sin(r1) * sin(r2) - sin(r0) * cos(r2);
-                rotationMatrix[2][2] = cos(r0) * cos(r1);
+                scaleMatrix = {
+                    {scale[0], 0, 0, 0},
+                    {0, scale[1], 0, 0},
+                    {0, 0, scale[2], 0},
+                    {0, 0, 0, 1}
+                };
 
-                rotationMatrix[3][3] = 1;
-
-                translationMatrix[0][3] = translation[0];
-                translationMatrix[1][3] = translation[1];
-                translationMatrix[2][3] = translation[2];
-                translationMatrix[3][3] = 1;
-
-                transformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+                // SRT
+                transformMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 
                 return transformMatrix;
             }

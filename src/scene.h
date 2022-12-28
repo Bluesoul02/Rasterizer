@@ -3,13 +3,14 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <memory>
 #include "shape.h"
 #include <window.h>
 #include "ibehavior.h"
 
 #define VIEWPORT_WIDTH 2.0
-#define CANVAS_WIDTH 768
-#define CANVAS_HEIGHT 768
+#define CANVAS_WIDTH 800
+#define CANVAS_HEIGHT 800
 
 namespace aline {
 
@@ -21,38 +22,30 @@ namespace aline {
             std::vector<Object> objects;
 
             void draw_object(const Object &o) {
-                // Mat44r transform = o.transform(); // bad alloc
+                Mat44r transform = o.transform();
 
-                std::cout << "Vertices vector size: " << o.get_vertices().size() << std::endl;
-                for (const Vertex &v : o.get_vertices()) {
-                std::cout << v.get_vector() << std::endl;
-                }
-                std::cout << "Faces vector size: " << o.get_faces().size() << std::endl;
-                for (const Face &f : o.get_faces()) {
-                std::cout << f.get_v0() << ", " << f.get_v1() << ", " << f.get_v2() << std::endl;
-                }
-                // for (Face f : o.get_faces()) { // seg fault is o.get_faces
+                for (Face f : o.get_faces()) {
                     // set color
-                    // window.set_draw_color(f.get_color());
-                    // Vertex vert0 = o.get_vertices()[f.get_v0()];
-                    // Vertex vert1 = o.get_vertices()[f.get_v1()];
-                    // Vertex vert2 = o.get_vertices()[f.get_v2()];
-                    // Vec3r vec0 = vert0.get_vector();
-                    // Vec3r vec1 = vert1.get_vector();
-                    // Vec3r vec2 = vert2.get_vector();
+                    window.set_draw_color(f.get_color());
+                    Vertex vert0 = o.get_vertices()[f.get_v0()];
+                    Vertex vert1 = o.get_vertices()[f.get_v1()];
+                    Vertex vert2 = o.get_vertices()[f.get_v2()];
+                    Vec4r vec0 { vert0.get_vector()[0], vert0.get_vector()[1], vert0.get_vector()[2], 1.0 };
+                    Vec4r vec1 { vert1.get_vector()[0], vert1.get_vector()[1], vert1.get_vector()[2], 1.0 };
+                    Vec4r vec2 { vert2.get_vector()[0], vert2.get_vector()[1], vert2.get_vector()[2], 1.0 };
 
                     //perspective projection
-                    // Vec2r v0 = perspective_projection(transform[0], 1);
-                    // Vec2r v1 = perspective_projection(transform[1], 1);
-                    // Vec2r v2 = perspective_projection(transform[2], 1);
+                    Vec2r v0 = perspective_projection(transform * vec0, 50);
+                    Vec2r v1 = perspective_projection(transform * vec1, 50);
+                    Vec2r v2 = perspective_projection(transform * vec2 , 50);
 
                     if (display == 0) {
-                        // draw_wireframe_triangle(v0, v1, v2);
+                        draw_wireframe_triangle(v0, v1, v2);
                     }
                     else if (display == 1) {
-                        // draw_filled_triangle(v0, v1, v2);
+                        draw_filled_triangle(v0, v1, v2);
                     }
-                // }
+                }
             }
 
             Vec2r perspective_projection( const Vec4r & v, real d ) {
@@ -62,9 +55,8 @@ namespace aline {
                     result[1] = 0;
                     return result;
                 }
-                result[0] = v[0] / v[3];
-                result[1] = v[1] / v[3];
-                result = result * d;
+                result[0] = (d * v[0]) / v[2];
+                result[1] = (d * v[1]) / v[2];
                 return result;
             }
 
@@ -89,23 +81,27 @@ namespace aline {
                     std::string type;
                     lineStream >> type;
                     if (type == "v") {
-                    lineStream >> x >> y >> z;
-                    Vec3r vec {x, y, z};
-                    Vertex v(vec, 1);
-                    vertices.push_back(v);
+                        lineStream >> x >> y >> z;
+                        Vec3r vec {x, y, z};
+                        Vertex v(vec, 1);
+                        vertices.push_back(v);
                     } else if (type == "f") {
-                    lineStream >> v1 >> v2 >> v3;
-                    // OBJ indices start at 1, so subtract 1 to get 0-based indices
-                    v1--;
-                    v2--;
-                    v3--;
-                    Face f(v1, v2, v3, minwin::WHITE);
-                    faces.push_back(f);
+                        lineStream >> v1 >> v2 >> v3;
+                        v1--;
+                        v2--;
+                        v3--;
+                        Face f(v1, v2, v3, minwin::WHITE);
+                        faces.push_back(f);
                     }
                 }
-                Shape s(file_name, vertices, faces);
-                Object o(s, {0, 0, 0}, {0, 0, 0}, {1, 1, 1});
-                add_object(o);
+                Shape *s = new Shape(file_name, vertices, faces);
+                Object o(*s, {40, 0, 3000}, {0, 0, 0}, {1, 1, 1});
+                Object o_copy(o);
+                add_object(o_copy);
+            }
+
+            void unload_data() {
+                // free objects shapes
             }
 
         public:
@@ -153,6 +149,7 @@ namespace aline {
             }
 
             void shutdown() {
+                unload_data();
                 window.close();
             }
 

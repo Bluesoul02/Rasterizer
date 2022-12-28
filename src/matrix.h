@@ -214,23 +214,25 @@ namespace aline {
         return res;
     }
 
-    template <class T, int M, int N> Vector<T, M> operator*(const Matrix<T, M, N>& m, const Vector<T, N>& v) {
+    template <class T, int M, int N>
+    Vector<T, M> operator*(const Matrix<T, M, N>& m, const Vector<T, N>& v) {
         Vector<T, M> res;
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
                 res[i] += (m[i][j] * v[j]);
-            }
-        }
         return res;
     }
+
 
     template <class T, int M, int N, int O> Matrix<T, M, O> operator*(const Matrix<T, M, N>& m, const Matrix<T, N, O>& n) {
         Matrix<T, M, O> res  = Matrix<T, M, O>();
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < O; j++) {
+                T sum = 0;
                 for (int k = 0; k < N; k++) {
-                    res[i][j] += m[i][k] * n[k][j];
+                    sum += m[i][k] * n[k][j];
                 }
+                res[i][j] = sum;
             }
         }
         return res;
