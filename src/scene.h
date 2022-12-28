@@ -96,6 +96,7 @@ namespace aline {
                 }
                 Shape *s = new Shape(file_name, vertices, faces);
                 Object o(*s, {40, 0, 3000}, {0, 0, 0}, {1, 1, 1});
+                //Object o(*s, {2.5, 1, 100}, {10, -10, 10}, {1, 1, 1});
                 Object o_copy(o);
                 add_object(o_copy);
             }

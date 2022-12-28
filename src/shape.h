@@ -130,7 +130,10 @@ namespace aline {
                 };
 
                 // SRT
-                transformMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+                // transformMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+
+                // TRS
+                transformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
                 return transformMatrix;
             }
