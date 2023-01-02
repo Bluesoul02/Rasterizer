@@ -146,4 +146,30 @@ namespace aline {
                 return shape->get_faces();
             }
     };
+
+    class Frustum {
+        private:
+            real near;
+            real far;
+            real right;
+            real left;
+            real bottom;
+            real top;
+        public:
+            Frustum(real near_dist, real far_dist) {
+                
+            }
+
+            void get_near() {
+                
+            }
+            
+            void get_far() {
+                
+            }
+
+            Object clip(const Object &obj) const {
+        
+            }
+    };
 }

@@ -314,4 +314,72 @@ namespace aline {
                     Scene & owner;
             };
     };
+
+    class Camera {
+        private:
+            real aspect_ratio;
+            real focal_dist;
+            Vec4r position;
+            Vec3r orientation;
+            real move_speed;
+            real rot_speed;
+            real zoom_speed;
+            real current_move_speed;
+            real current_rot_speed;
+            real current_zoom_speed;
+            Frustum frustum;
+        public:
+            Camera(real aspect_ratio, real focal_dist = 2.0, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 0.125, real rot_speed = 0.25, real zoom_speed = 0.0625) {
+                this->aspect_ratio = aspect_ratio;
+                this->focal_dist = focal_dist;
+                this->position = position;
+                this->orientation = orientation;
+                this->move_speed = move_speed;
+                this->rot_speed = rot_speed;
+                this->zoom_speed = zoom_speed;
+                current_move_speed = 0;
+                current_rot_speed = 0;
+                current_zoom_speed = 0;
+            }
+
+            void move_forward(uint axis) {
+                position[axis] += move_speed;
+            }
+
+            void move_backward(uint axis) {
+                position[axis] -= move_speed;
+            }
+
+            void rotate_cw(uint axis) {
+                orientation[axis] += rot_speed;
+            }
+
+            void rotate_acw(uint axis) {
+                orientation[axis] -= rot_speed;
+            }
+
+            void zoom_in() {
+                focal_dist -= zoom_speed;
+            }
+
+            void zoom_out() {
+                focal_dist += zoom_speed;
+            }
+
+            void stop_movement() {
+
+            }
+
+            void stop_rotation() {
+
+            }
+
+            void stop_zoom() {
+                
+            }
+
+            void update() {
+
+            }
+    };
 }
