@@ -20,6 +20,7 @@ namespace aline {
             bool running { true };
             int display = 0;
             std::vector<Object> objects;
+            Camera camera = Camera(1);
 
             void draw_object(const Object &o) {
                 Mat44r transform = o.transform();
@@ -123,6 +124,10 @@ namespace aline {
             void run() {
                 window.register_key_behavior(minwin::KEY_ESCAPE, new QuitKeyBehavior(*this));
                 window.register_key_behavior(minwin::KEY_SPACE, new ChangeDisplayBehavior(*this));
+                window.register_key_behavior(minwin::KEY_Z, new MoveForwardBehavior(*this));
+                window.register_key_behavior(minwin::KEY_S, new MoveBackwardBehavior(*this));
+                window.register_key_behavior(minwin::KEY_D, new MoveRightBehavior(*this));
+                window.register_key_behavior(minwin::KEY_Q, new MoveLeftBehavior(*this));
                 window.register_quit_behavior(new QuitButtonBehavior(*this));
 
                 // open window
@@ -281,7 +286,7 @@ namespace aline {
             class QuitButtonBehavior : public minwin::IButtonBehavior
             {
                 public:
-                    QuitButtonBehavior( Scene &scene ) : owner { scene } {}
+                    QuitButtonBehavior(Scene &scene): owner {scene} {}
                     void on_click() const { this->owner.running = false; }
                 private:
                     Scene & owner;
@@ -290,7 +295,7 @@ namespace aline {
             class QuitKeyBehavior : public minwin::IKeyBehavior
             {
                 public:
-                    QuitKeyBehavior( Scene & scene ) : owner { scene } {}
+                    QuitKeyBehavior(Scene & scene): owner {scene} {}
                     void on_press() const { this->owner.running = false; }
                     void on_release() const {}
                 private:
@@ -300,7 +305,7 @@ namespace aline {
             class ChangeDisplayBehavior : public minwin::IKeyBehavior
             {
                 public:
-                    ChangeDisplayBehavior( Scene & scene ) : owner { scene } {}
+                    ChangeDisplayBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         if (this->owner.display == 0) {
                             this->owner.display = 1;
@@ -313,73 +318,61 @@ namespace aline {
                 private:
                     Scene & owner;
             };
-    };
 
-    class Camera {
-        private:
-            real aspect_ratio;
-            real focal_dist;
-            Vec4r position;
-            Vec3r orientation;
-            real move_speed;
-            real rot_speed;
-            real zoom_speed;
-            real current_move_speed;
-            real current_rot_speed;
-            real current_zoom_speed;
-            Frustum frustum;
-        public:
-            Camera(real aspect_ratio, real focal_dist = 2.0, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 0.125, real rot_speed = 0.25, real zoom_speed = 0.0625) {
-                this->aspect_ratio = aspect_ratio;
-                this->focal_dist = focal_dist;
-                this->position = position;
-                this->orientation = orientation;
-                this->move_speed = move_speed;
-                this->rot_speed = rot_speed;
-                this->zoom_speed = zoom_speed;
-                current_move_speed = 0;
-                current_rot_speed = 0;
-                current_zoom_speed = 0;
-            }
+            class MoveForwardBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveForwardBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_forward(0);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
 
-            void move_forward(uint axis) {
-                position[axis] += move_speed;
-            }
+            class MoveBackwardBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveBackwardBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_backward(0);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
 
-            void move_backward(uint axis) {
-                position[axis] -= move_speed;
-            }
+            class MoveRightBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveRightBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_forward(1);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
 
-            void rotate_cw(uint axis) {
-                orientation[axis] += rot_speed;
-            }
-
-            void rotate_acw(uint axis) {
-                orientation[axis] -= rot_speed;
-            }
-
-            void zoom_in() {
-                focal_dist -= zoom_speed;
-            }
-
-            void zoom_out() {
-                focal_dist += zoom_speed;
-            }
-
-            void stop_movement() {
-
-            }
-
-            void stop_rotation() {
-
-            }
-
-            void stop_zoom() {
-                
-            }
-
-            void update() {
-
-            }
+            class MoveLeftBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveLeftBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_backward(1);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
     };
 }

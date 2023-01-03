@@ -149,8 +149,8 @@ namespace aline {
 
     class Frustum {
         private:
-            real near;
-            real far;
+            real near; // front
+            real far; // back
             real right;
             real left;
             real bottom;
@@ -169,7 +169,121 @@ namespace aline {
             }
 
             Object clip(const Object &obj) const {
-        
+                return obj;
+            }
+    };
+
+    class Camera {
+        private:
+            real aspect_ratio;
+            real focal_dist;
+            Vec4r position;
+            Vec3r orientation;
+            real move_speed;
+            real rot_speed;
+            real zoom_speed;
+            real current_move_speed;
+            real current_rot_speed;
+            real current_zoom_speed;
+            // Frustum frustum;
+        public:
+            Camera(real aspect_ratio, real focal_dist = 2.0, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 0.125, real rot_speed = 0.25, real zoom_speed = 0.0625) {
+                this->aspect_ratio = aspect_ratio;
+                this->focal_dist = focal_dist;
+                this->position = position;
+                this->orientation = orientation;
+                this->move_speed = move_speed;
+                this->rot_speed = rot_speed;
+                this->zoom_speed = zoom_speed;
+                current_move_speed = 0;
+                current_rot_speed = 0;
+                current_zoom_speed = 0;
+            }
+
+            void move_forward(uint axis) {
+                position[axis] += move_speed;
+            }
+
+            void move_backward(uint axis) {
+                position[axis] -= move_speed;
+            }
+
+            void rotate_cw(uint axis) {
+                orientation[axis] += rot_speed;
+            }
+
+            void rotate_acw(uint axis) {
+                orientation[axis] -= rot_speed;
+            }
+
+            void zoom_in() {
+                focal_dist -= zoom_speed;
+            }
+
+            void zoom_out() {
+                focal_dist += zoom_speed;
+            }
+
+            void stop_movement() {
+
+            }
+
+            void stop_rotation() {
+
+            }
+
+            void stop_zoom() {
+
+            }
+
+            Mat44r transform() const {
+                Mat44r transformMatrix = 
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 0, 1}
+                };
+                Mat44r rotationMatrix;
+                Mat44r scaleMatrix;
+                Mat44r translationMatrix;
+
+                real r0 = orientation[0] * M_PI / 180;
+                real r1 = orientation[1] * M_PI / 180;
+                real r2 = orientation[2] * M_PI / 180;
+
+                rotationMatrix = {
+                    {cos(r1) * cos(r2), cos(r1) * sin(r2), -sin(r1), 0},
+                    {sin(r0) * sin(r1) * cos(r2) - cos(r0) * sin(r2), sin(r0) * sin(r1) * sin(r2) + cos(r0) * cos(r2), sin(r0) * cos(r1), 0},
+                    {cos(r0) * sin(r1) * cos(r2) + sin(r0) * sin(r2), cos(r0) * sin(r1) * sin(r2) - sin(r0) * cos(r2), cos(r0) * cos(r1), 0},
+                    {0, 0, 0, 1}
+                };
+
+                translationMatrix = {
+                    {1, 0, 0, position[0]},
+                    {0, 1, 0, position[1]},
+                    {0, 0, 1, position[2]},
+                    {0, 0, 0, 1}
+                };
+
+                scaleMatrix = {
+                    {position[3], 0, 0, 0},
+                    {0, position[3], 0, 0},
+                    {0, 0, position[3], 0},
+                    {0, 0, 0, 1}
+                };
+
+                // SRT
+                // transformMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+
+                // TRS
+                transformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+                return transformMatrix;
+            }
+
+            void update() {
+
             }
     };
 }
