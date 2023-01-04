@@ -40,7 +40,7 @@ namespace aline {
 
             T at(size_t i) const {
                 if (i >= N)
-                    throw std::runtime_error("index out of range");
+                    throw std::runtime_error("Vector: index out of range");
                 return vector[i];
             }
 
@@ -49,8 +49,8 @@ namespace aline {
             }
 
             T & operator[](size_t i) {
-                if (i > N)
-                    throw std::runtime_error("index out of range");
+                if (i >= N)
+                    throw std::runtime_error("Vector: index out of range");
                 return vector[i];
             }
 
@@ -64,7 +64,7 @@ namespace aline {
 
     template <class T, int N> Vector<T, N> cross(const Vector<T, N>& u, const Vector<T, N>& v) {
         if (N < 3)
-            throw std::runtime_error("vector need at least 3 elements");
+            throw std::runtime_error("Vector need at least 3 elements");
         Vector<T, N> cross_P;
         cross_P[0] = u[1] * v[2] - u[2] * v[1];
         cross_P[1] = u[2] * v[0] - u[0] * v[2];

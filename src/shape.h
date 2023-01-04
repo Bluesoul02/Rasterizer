@@ -149,12 +149,12 @@ namespace aline {
 
     class Frustum {
         private:
-            Vec3r near; // front
-            Vec3r far; // back
-            Vec3r right;
-            Vec3r left;
-            Vec3r bottom;
-            Vec3r top;
+            Vec4r near; // front
+            Vec4r far; // back
+            Vec4r right;
+            Vec4r left;
+            Vec4r bottom;
+            Vec4r top;
         public:
             Frustum(real near_dist, real far_dist) {
                 near = {0, 0, -1, -near_dist};
@@ -163,14 +163,6 @@ namespace aline {
                 right = {-2, 0, -1, 0};
                 bottom = {0, 2, -1, 0};
                 top = {0, -2, -1, 0};
-            }
-
-            Vec3r get_near() {
-                return near;
-            }
-            
-            Vec3r get_far() {
-                return far;
             }
 
             Object clip(const Object &obj) const {
@@ -192,9 +184,8 @@ namespace aline {
             real current_zoom_speed;
             uint axis;
             uint axisR;
-            Frustum frustum = Frustum(0.1, 5);
         public:
-            Camera(real aspect_ratio, real focal_dist = 2, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 2, real rot_speed = 1, real zoom_speed = 0.0625) {
+            Camera(real aspect_ratio, real focal_dist = 2, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 2, real rot_speed = 0.25, real zoom_speed = 0.0625) {
                 this->aspect_ratio = aspect_ratio;
                 this->focal_dist = focal_dist;
                 this->position = position;
