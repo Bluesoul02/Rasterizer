@@ -175,6 +175,7 @@ namespace aline {
             real aspect_ratio;
             real focal_dist;
             Vec4r position;
+            Frustum frustum = Frustum(0.1, 5.0);
             Vec3r orientation;
             real move_speed;
             real rot_speed;
@@ -291,6 +292,9 @@ namespace aline {
                 // Vec3r tmp =  a * sin(current_rot_speed / 2 );
                 // Vec4r r = {tmp[0], tmp[1], tmp[2], cos(current_rot_speed / 2)};
                 orientation[axisR] += current_rot_speed;
+                // rotating the camera will also move forward this a counter measure to attenuate the zoom
+                if (axisR != 2 && current_move_speed == 0 && current_rot_speed != 0)
+                    position[2] -= move_speed + current_rot_speed;
             }
     };
 }
