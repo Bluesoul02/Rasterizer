@@ -20,7 +20,7 @@ namespace aline {
             bool running { true };
             int display = 0;
             std::vector<Object> objects;
-            Camera camera = Camera(1);
+            Camera camera = Camera(CANVAS_WIDTH/CANVAS_HEIGHT);
 
             void draw_object(const Object &o) {
                 Mat44r transform = camera.transform() * o.transform();
@@ -97,7 +97,6 @@ namespace aline {
                 }
                 Shape *s = new Shape(file_name, vertices, faces);
                 Object o(*s, {40, 0, 3000}, {0, 0, 0}, {1, 1, 1});
-                //Object o(*s, {2.5, 1, 100}, {10, -10, 10}, {1, 1, 1});
                 Object o_copy(o);
                 add_object(o_copy);
             }
@@ -128,6 +127,8 @@ namespace aline {
                 window.register_key_behavior(minwin::KEY_S, new MoveBackwardBehavior(*this));
                 window.register_key_behavior(minwin::KEY_D, new MoveRightBehavior(*this));
                 window.register_key_behavior(minwin::KEY_Q, new MoveLeftBehavior(*this));
+                window.register_key_behavior(minwin::KEY_W, new MoveUpwardBehavior(*this));
+                window.register_key_behavior(minwin::KEY_X, new MoveDownwardBehavior(*this));
                 window.register_quit_behavior(new QuitButtonBehavior(*this));
 
                 // open window
@@ -324,7 +325,8 @@ namespace aline {
                 public:
                     MoveForwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
-                        this->owner.camera.move_forward(0);
+                        this->owner.camera.move_forward(2);
+                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -338,7 +340,38 @@ namespace aline {
                 public:
                     MoveBackwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
-                        this->owner.camera.move_backward(0);
+                        this->owner.camera.move_backward(2);
+                        this->owner.camera.update();
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class MoveUpwardBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveUpwardBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_forward(1);
+                        this->owner.camera.update();
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class MoveDownwardBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    MoveDownwardBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.move_backward(1);
+                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -352,7 +385,8 @@ namespace aline {
                 public:
                     MoveRightBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
-                        this->owner.camera.move_forward(1);
+                        this->owner.camera.move_forward(0);
+                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -366,10 +400,26 @@ namespace aline {
                 public:
                     MoveLeftBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
-                        this->owner.camera.move_backward(1);
+                        this->owner.camera.move_backward(0);
+                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateLeftBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateLeftBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_acw(0);
+                        this->owner.camera.update();
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
                     }
                 private:
                     Scene & owner;

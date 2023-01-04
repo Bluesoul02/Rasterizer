@@ -185,6 +185,7 @@ namespace aline {
             real current_move_speed;
             real current_rot_speed;
             real current_zoom_speed;
+            uint axis;
             // Frustum frustum;
         public:
             Camera(real aspect_ratio, real focal_dist = 2.0, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 0.125, real rot_speed = 0.25, real zoom_speed = 0.0625) {
@@ -200,29 +201,32 @@ namespace aline {
                 current_zoom_speed = 0;
             }
 
-            Vec4r get_position() const {
-                return position;
-            } 
+            // Vec4r get_position() const {
+            //     return position;
+            // } 
             
-            Vec3r get_orientation() const {
-                return orientation;
-            }
+            // Vec3r get_orientation() const {
+            //     return orientation;
+            // }
 
             void move_forward(uint axis) {
                 current_move_speed = move_speed;
-                position[axis] += current_move_speed;
+                this->axis = axis;
             }
 
             void move_backward(uint axis) {
                 current_move_speed = -move_speed;
+                this->axis = axis;
             }
 
             void rotate_cw(uint axis) {
                 current_rot_speed = rot_speed;
+                this->axis = axis;
             }
 
             void rotate_acw(uint axis) {
                 current_rot_speed = -rot_speed;
+                this->axis = axis;
             }
 
             void zoom_in() {
@@ -292,7 +296,8 @@ namespace aline {
             }
 
             void update() {
-
+                position[axis] += current_move_speed;
+                orientation[axis] += current_rot_speed;
             }
     };
 }
