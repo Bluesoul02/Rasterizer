@@ -129,6 +129,12 @@ namespace aline {
                 window.register_key_behavior(minwin::KEY_Q, new MoveLeftBehavior(*this));
                 window.register_key_behavior(minwin::KEY_W, new MoveUpwardBehavior(*this));
                 window.register_key_behavior(minwin::KEY_X, new MoveDownwardBehavior(*this));
+                window.register_key_behavior(minwin::KEY_R, new RotateRightXBehavior(*this));
+                window.register_key_behavior(minwin::KEY_T, new RotateLeftXBehavior(*this));
+                window.register_key_behavior(minwin::KEY_E, new RotateRightYBehavior(*this));
+                window.register_key_behavior(minwin::KEY_A, new RotateLeftYBehavior(*this));
+                window.register_key_behavior(minwin::KEY_F, new RotateRightZBehavior(*this));
+                window.register_key_behavior(minwin::KEY_G, new RotateLeftZBehavior(*this));
                 window.register_quit_behavior(new QuitButtonBehavior(*this));
 
                 // open window
@@ -142,6 +148,8 @@ namespace aline {
                 {
                     // process keyboard inputs, etc.
                     window.process_input();
+
+                    this->camera.update();
                     
                     // clear window
                     window.clear();
@@ -326,7 +334,6 @@ namespace aline {
                     MoveForwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_forward(2);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -341,7 +348,6 @@ namespace aline {
                     MoveBackwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_backward(2);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -356,7 +362,6 @@ namespace aline {
                     MoveUpwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_forward(1);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -371,7 +376,6 @@ namespace aline {
                     MoveDownwardBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_backward(1);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -386,7 +390,6 @@ namespace aline {
                     MoveRightBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_forward(0);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -401,7 +404,6 @@ namespace aline {
                     MoveLeftBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.move_backward(0);
-                        this->owner.camera.update();
                     }
                     void on_release() const {
                         this->owner.camera.stop_movement();
@@ -410,13 +412,82 @@ namespace aline {
                     Scene & owner;
             };
 
-            class RotateLeftBehavior : public minwin::IKeyBehavior
+            class RotateLeftXBehavior : public minwin::IKeyBehavior
             {
                 public:
-                    RotateLeftBehavior(Scene & scene): owner {scene} {}
+                    RotateLeftXBehavior(Scene & scene): owner {scene} {}
                     void on_press() const {
                         this->owner.camera.rotate_acw(0);
-                        this->owner.camera.update();
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateRightXBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateRightXBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_cw(0);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateLeftYBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateLeftYBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_acw(1);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateRightYBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateRightYBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_cw(1);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateLeftZBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateLeftZBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_acw(2);
+                    }
+                    void on_release() const {
+                        this->owner.camera.stop_rotation();
+                    }
+                private:
+                    Scene & owner;
+            };
+
+            class RotateRightZBehavior : public minwin::IKeyBehavior
+            {
+                public:
+                    RotateRightZBehavior(Scene & scene): owner {scene} {}
+                    void on_press() const {
+                        this->owner.camera.rotate_cw(2);
                     }
                     void on_release() const {
                         this->owner.camera.stop_rotation();

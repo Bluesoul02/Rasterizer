@@ -149,23 +149,28 @@ namespace aline {
 
     class Frustum {
         private:
-            real near; // front
-            real far; // back
-            real right;
-            real left;
-            real bottom;
-            real top;
+            Vec3r near; // front
+            Vec3r far; // back
+            Vec3r right;
+            Vec3r left;
+            Vec3r bottom;
+            Vec3r top;
         public:
             Frustum(real near_dist, real far_dist) {
-                
+                near = {0, 0, -1, -near_dist};
+                far = {0, 0, 1, far_dist};
+                left = {2, 0, -1, 0};
+                right = {-2, 0, -1, 0};
+                bottom = {0, 2, -1, 0};
+                top = {0, -2, -1, 0};
             }
 
-            void get_near() {
-                
+            Vec3r get_near() {
+                return near;
             }
             
-            void get_far() {
-                
+            Vec3r get_far() {
+                return far;
             }
 
             Object clip(const Object &obj) const {
@@ -186,9 +191,10 @@ namespace aline {
             real current_rot_speed;
             real current_zoom_speed;
             uint axis;
-            // Frustum frustum;
+            uint axisR;
+            Frustum frustum = Frustum(0.1, 5);
         public:
-            Camera(real aspect_ratio, real focal_dist = 2.0, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 0.125, real rot_speed = 0.25, real zoom_speed = 0.0625) {
+            Camera(real aspect_ratio, real focal_dist = 2, Vec4r position = {0.0, 0.0, 0.0, 1.0}, Vec3r orientation = {0.0, 0.0, 0.0}, real move_speed = 2, real rot_speed = 1, real zoom_speed = 0.0625) {
                 this->aspect_ratio = aspect_ratio;
                 this->focal_dist = focal_dist;
                 this->position = position;
@@ -200,14 +206,6 @@ namespace aline {
                 current_rot_speed = 0;
                 current_zoom_speed = 0;
             }
-
-            // Vec4r get_position() const {
-            //     return position;
-            // } 
-            
-            // Vec3r get_orientation() const {
-            //     return orientation;
-            // }
 
             void move_forward(uint axis) {
                 current_move_speed = move_speed;
@@ -221,12 +219,12 @@ namespace aline {
 
             void rotate_cw(uint axis) {
                 current_rot_speed = rot_speed;
-                this->axis = axis;
+                this->axisR = axis;
             }
 
             void rotate_acw(uint axis) {
                 current_rot_speed = -rot_speed;
-                this->axis = axis;
+                this->axisR = axis;
             }
 
             void zoom_in() {
@@ -297,7 +295,11 @@ namespace aline {
 
             void update() {
                 position[axis] += current_move_speed;
-                orientation[axis] += current_rot_speed;
+                // Vec3r a = {0, 0, 0};
+                // a[axis] += current_rot_speed;
+                // Vec3r tmp =  a * sin(current_rot_speed / 2 );
+                // Vec4r r = {tmp[0], tmp[1], tmp[2], cos(current_rot_speed / 2)};
+                orientation[axisR] += current_rot_speed;
             }
     };
 }
