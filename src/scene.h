@@ -23,7 +23,7 @@ namespace aline {
             Camera camera = Camera(1);
 
             void draw_object(const Object &o) {
-                Mat44r transform = o.transform();
+                Mat44r transform = camera.transform() * o.transform();
 
                 for (Face f : o.get_faces()) {
                     // set color

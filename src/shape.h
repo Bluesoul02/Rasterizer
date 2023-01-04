@@ -200,40 +200,49 @@ namespace aline {
                 current_zoom_speed = 0;
             }
 
+            Vec4r get_position() const {
+                return position;
+            } 
+            
+            Vec3r get_orientation() const {
+                return orientation;
+            }
+
             void move_forward(uint axis) {
-                position[axis] += move_speed;
+                current_move_speed = move_speed;
+                position[axis] += current_move_speed;
             }
 
             void move_backward(uint axis) {
-                position[axis] -= move_speed;
+                current_move_speed = -move_speed;
             }
 
             void rotate_cw(uint axis) {
-                orientation[axis] += rot_speed;
+                current_rot_speed = rot_speed;
             }
 
             void rotate_acw(uint axis) {
-                orientation[axis] -= rot_speed;
+                current_rot_speed = -rot_speed;
             }
 
             void zoom_in() {
-                focal_dist -= zoom_speed;
+                current_zoom_speed = zoom_speed;
             }
 
             void zoom_out() {
-                focal_dist += zoom_speed;
+                current_zoom_speed = -zoom_speed;
             }
 
             void stop_movement() {
-
+                current_move_speed = 0;
             }
 
             void stop_rotation() {
-
+                current_rot_speed = 0;
             }
 
             void stop_zoom() {
-
+                current_zoom_speed = 0;
             }
 
             Mat44r transform() const {
@@ -260,9 +269,9 @@ namespace aline {
                 };
 
                 translationMatrix = {
-                    {1, 0, 0, position[0]},
-                    {0, 1, 0, position[1]},
-                    {0, 0, 1, position[2]},
+                    {1, 0, 0, -position[0]},
+                    {0, 1, 0, -position[1]},
+                    {0, 0, 1, -position[2]},
                     {0, 0, 0, 1}
                 };
 
