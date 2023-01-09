@@ -17,6 +17,7 @@ not looking at any objects will make the program crash
 
 clipping, backface culling and hidden surface removal are not implemented
 
+The project need the minwin library to work which is included in its archive file with the same name
 
 # to recompile:
 - make clean
